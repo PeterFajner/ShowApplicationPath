@@ -1,0 +1,8 @@
+{
+  "name": "Show Application Path",
+  "description": "Copy or open the path to any application launcher",
+  "uuid": "showpath@pfaj.ca",
+  "shell-version": [
+    "3.38"
+  ]
+}
