@@ -18,15 +18,41 @@
 
 /* exported init */
 
+const ExtensionUtils = imports.misc.extensionUtils;
+
 class Extension {
     constructor() {
     }
 
     enable() {
+        this.settings = ExtensionUtils.getSettings("ca.pfaj.showpath");
     }
 
     disable() {
     }
+}
+
+/**
+ * Base logging function that logs to log, stdout, or stderr with date prefix.
+ * 
+ * @param {function} printFunction 
+ * @param {string} msg 
+ */
+function baseLog(printFunction, msg) {
+    const formattedMsg = `[${new Date().toISOString()} showpath] ${msg}`;
+    printFunction(formattedMsg);
+}
+
+function myLog(msg) {
+    baseLog(log, msg);
+}
+
+function myErr(msg) {
+    baseLog(printerr, msg);
+}
+
+function myPrint(msg) {
+    baseLog(print, msg);
 }
 
 function init() {

@@ -1,0 +1,18 @@
+<!--
+    Remember: After editing this schema, run
+        $ glib-compile-schemas schemas/
+    from this extension's directory.
+-->
+
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="ca.pfaj.showpath" path="/ca/pfaj/showpath/">
+    <!-- See also: https://developer.gnome.org/glib/stable/gvariant-format-strings.html -->
+    <key name="show-show-in-folder" type="b">
+      <default>true</default>
+    </key>
+    <key name="show-copy-path" type="b">
+      <default>true</default>
+    </key>
+  </schema>
+</schemalist>
