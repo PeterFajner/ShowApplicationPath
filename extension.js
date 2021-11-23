@@ -38,32 +38,22 @@ function injectIntoAppMenu() {
     myLog("Injecting into app menu...");
     const originalFunc = AppIconMenu.prototype._rebuildMenu;
     AppIconMenu.prototype._rebuildMenu = function() {
-        myLog(this);
-
         // run the original _rebuildMenu()
         originalFunc.bind(this)();
 
         // add our menu entries
-        const _sampleEntry = this._appendMenuItem("Test entry" /* todo i10n support */);
-
-        // log something
-        myLog("Hello from the _rebuildMenu method!");
+        this._appendSeparator();
+        this._show_in_folder = this._appendMenuItem("Show in folder" /* todo i10n support */);
+        this._show_in_folder.connect("activate", () => {
+            myLog("This would open the file manager"); // todo implement
+        });
+        this._copy_path = this._appendMenuItem("Copy path" /* todo i10n support */);
+        this._copy_path.connect("activate", () => {
+            myLog("This would copy the path to the clipboard."); // todo implement
+        });
     };
 }
 
-/*
-function injectToFunction(parent, name, func) {
-	let origin = parent[name];
-	parent[name] = function() {
-		let ret;
-		ret = origin.apply(this, arguments);
-			if (ret === undefined)
-				ret = func.apply(this, arguments);
-			return ret;
-		}
-	return origin;
-}
-*/
 
 /**
  * Base logging function that logs to log, stdout, or stderr with date prefix.
