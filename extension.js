@@ -20,6 +20,7 @@
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const AppIconMenu = imports.ui.appDisplay.AppIconMenu;
+const { Clutter, Gio, GLib, GObject, Graphene, Meta, Shell, St } = imports.gi;
 
 class Extension {
     constructor() {
@@ -46,6 +47,17 @@ function injectIntoAppMenu() {
         this._show_in_folder = this._appendMenuItem("Show in folder" /* todo i10n support */);
         this._show_in_folder.connect("activate", () => {
             myLog("This would open the file manager"); // todo implement
+            myLog(`Source: ${this._source}`);
+            const app = this._source.app;
+            myLog(`App: ${app}`);
+            myLog(`App id: ${this._source.app.get_id()}`);
+            myLog(`App name: ${this._source.app.get_name()}`);
+            //const appSys = Shell.AppSystem.get_default();
+            //const app = appSys.lookup_app(this._source.app.get_id());
+            const appInfo = app.get_app_info();
+            const fileName = appInfo.get_filename();
+            myLog(`App info: ${appInfo}`);
+            myLog(`App filename: ${fileName}`);
         });
         this._copy_path = this._appendMenuItem("Copy path" /* todo i10n support */);
         this._copy_path.connect("activate", () => {
