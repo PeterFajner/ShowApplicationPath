@@ -21,6 +21,8 @@
 const ExtensionUtils = imports.misc.extensionUtils;
 const AppIconMenu = imports.ui.appDisplay.AppIconMenu;
 const { Clutter, Gio, GLib, GObject, Graphene, Meta, Shell, St } = imports.gi;
+const File = Gio.File;
+const Util = imports.misc.util;
 
 class Extension {
     constructor() {
@@ -55,9 +57,16 @@ function injectIntoAppMenu() {
             //const appSys = Shell.AppSystem.get_default();
             //const app = appSys.lookup_app(this._source.app.get_id());
             const appInfo = app.get_app_info();
-            const fileName = appInfo.get_filename();
+            const filePath = appInfo.get_filename();
+            const fileDirectory = File.new_for_path(filePath).get_parent().get_path();
             myLog(`App info: ${appInfo}`);
-            myLog(`App filename: ${fileName}`);
+            myLog(`App filepath: ${filePath}`);
+            myLog(`App directory: ${fileDirectory}`);
+            // open file manager at path
+            const dbusCommand = `dbus-send --session --print-reply --dest=org.freedesktop.FileManager1 --type=method_call /org/freedesktop/FileManager1 org.freedesktop.FileManager1.ShowItems array:string:"file://${filePath}" string:""`
+            //Util.spawn(["/bin/bash", "-c", `xdg-open ${fileDirectory}`]);
+            Util.spawn(["/bin/bash", "-c", dbusCommand]);
+            // todo close menu
         });
         this._copy_path = this._appendMenuItem("Copy path" /* todo i10n support */);
         this._copy_path.connect("activate", () => {
