@@ -24,6 +24,17 @@ const { Clutter, Gio, GLib, GObject, Graphene, Meta, Shell, St } = imports.gi;
 const File = Gio.File;
 const Util = imports.misc.util;
 const Main = imports.ui.main;
+const Gettext = imports.gettext;
+const Me = ExtensionUtils.getCurrentExtension();
+
+// This creates an object with functions for marking strings as translatable.
+// You must pass the same domain as `ExtensionUtils.initTranslations()`.
+const Domain = Gettext.domain(Me.metadata.uuid);
+
+// These are the two most commonly used Gettext functions. The `gettext()`
+// function is often aliased as `_()`
+const _ = Domain.gettext;
+const ngettext = Domain.ngettext;
 
 class Extension {
     constructor() {
@@ -61,28 +72,17 @@ function injectIntoAppMenu(settings) {
             this._appendSeparator();
         }
         if (showShowInFolder) {
-            this._show_in_folder = this._appendMenuItem("Show in folder" /* todo i10n support */);
+            this._show_in_folder = this._appendMenuItem(_("Show in folder"));
             this._show_in_folder.connect("activate", () => {
-                myLog(`Settings: ${settings}`);
-                myLog(`Source: ${this._source}`);
-                myLog(`App: ${app}`);
-                myLog(`App id: ${this._source.app.get_id()}`);
-                myLog(`App name: ${this._source.app.get_name()}`);
-                //const appSys = Shell.AppSystem.get_default();
-                //const app = appSys.lookup_app(this._source.app.get_id());
-                myLog(`App info: ${appInfo}`);
-                myLog(`App filepath: ${filePath}`);
-                myLog(`App directory: ${fileDirectory}`);
                 // open file manager at path
                 const dbusCommand = `dbus-send --session --print-reply --dest=org.freedesktop.FileManager1 --type=method_call /org/freedesktop/FileManager1 org.freedesktop.FileManager1.ShowItems array:string:"file://${filePath}" string:""`
-                //Util.spawn(["/bin/bash", "-c", `xdg-open ${fileDirectory}`]);
                 Util.spawn(["/bin/bash", "-c", dbusCommand]);
                 // hide overview
                 Main.overview.hide();
             });
         }
         if (showCopyPath) {
-            this._copy_path = this._appendMenuItem("Copy path" /* todo i10n support */);
+            this._copy_path = this._appendMenuItem(_("Copy path"));
             this._copy_path.connect("activate", () => {
                 St.Clipboard.get_default().set_text(St.ClipboardType.PRIMARY, filePath);
                 St.Clipboard.get_default().set_text(St.ClipboardType.CLIPBOARD, filePath);
@@ -123,5 +123,6 @@ function myPrint(msg) {
 }
 
 function init() {
+    ExtensionUtils.initTranslations(Me.metadata.uuid);
     return new Extension();
 }

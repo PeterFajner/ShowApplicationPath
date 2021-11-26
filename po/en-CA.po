@@ -1,0 +1,37 @@
+#
+# Peter Fajner <mail@pfaj.ca>, 2021.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-11-26 16:43-0400\n"
+"PO-Revision-Date: 2021-11-26 16:46-0400\n"
+"Last-Translator: Peter Fajner <mail@pfaj.ca>\n"
+"Language-Team: English - Canada <mail@pfaj.ca>\n"
+"Language: en_CA\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Gtranslator 41.0\n"
+
+#: extension.js:74
+msgid "Show in folder"
+msgstr "Show in folder"
+
+#: extension.js:84
+msgid "Copy path"
+msgstr "Copy path"
+
+#: prefs.js:46
+msgid "Show 'Show in folder'"
+msgstr "Show 'Show in folder'"
+
+#: prefs.js:60
+msgid "Show 'Copy path'"
+msgstr "Show 'Copy path'"
+
+#: prefs.js:74
+msgid "Show path"
+msgstr "Show path"

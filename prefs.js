@@ -5,9 +5,19 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const Gio = imports.gi.Gio;
 const Gtk = imports.gi.Gtk;
 const Me = ExtensionUtils.getCurrentExtension();
+const Gettext = imports.gettext;
+
+// This creates an object with functions for marking strings as translatable.
+// You must pass the same domain as `ExtensionUtils.initTranslations()`.
+const Domain = Gettext.domain(Me.metadata.uuid);
+
+// These are the two most commonly used Gettext functions. The `gettext()`
+// function is often aliased as `_()`
+const _ = Domain.gettext;
+const ngettext = Domain.ngettext;
 
 function init() {
-
+    ExtensionUtils.initTranslations(Me.metadata.uuid);
 }
 
 function buildPrefsWidget() {
@@ -33,7 +43,7 @@ function buildPrefsWidget() {
 
     // add label and switch for "Show in folder"
     const showInFolderLabel = new Gtk.Label({
-        label: "Show 'Show in folder'",
+        label: _("Show 'Show in folder'"),
         halign: Gtk.Align.START,
         visible: true,
     });
@@ -47,7 +57,7 @@ function buildPrefsWidget() {
 
     // add label and switch for "Copy path"
     const copyPathLabel = new Gtk.Label({
-        label: "Show 'Copy path'",
+        label: _("Show 'Copy path'"),
         halign: Gtk.Align.START,
         visible: true,
     });
@@ -61,7 +71,7 @@ function buildPrefsWidget() {
 
     // add label and switch for "Show path"
     const showPathLabel = new Gtk.Label({
-        label: "Show path",
+        label: _("Show path"),
         halign: Gtk.Align.START,
         visible: true,
     });
