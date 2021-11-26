@@ -57,9 +57,24 @@ function buildPrefsWidget() {
     });
     prefsWidget.attach(copyPathToggle, 1, 2, 1, 1);
 
+    // add label and switch for "Show path"
+    const showPathLabel = new Gtk.Label({
+        label: "Show path",
+        halign: Gtk.Align.START,
+        visible: true,
+    });
+    prefsWidget.attach(showPathLabel, 0, 3, 1, 1);
+    const showPathToggle = new Gtk.Switch({
+        active: this.settings.get_boolean('show-path'),
+        halign: Gtk.Align.END,
+        visible: true,
+    });
+    prefsWidget.attach(showPathToggle, 1, 3, 1, 1);
+
     // bind toggles to config
     this.settings.bind('show-show-in-folder', showInFolderToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
     this.settings.bind('show-copy-path', copyPathToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
+    this.settings.bind('show-path', showPathToggle, 'active', Gio.SettingsBindFlags.DEFAULT);
 
     return prefsWidget;
 }

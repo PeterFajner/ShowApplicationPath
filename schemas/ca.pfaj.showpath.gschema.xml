@@ -14,5 +14,8 @@
     <key name="show-copy-path" type="b">
       <default>true</default>
     </key>
+    <key name="show-path" type="b">
+      <default>true</default>
+    </key>
   </schema>
 </schemalist>

@@ -45,21 +45,24 @@ function injectIntoAppMenu() {
         // run the original _rebuildMenu()
         originalFunc.bind(this)();
 
-        // add our menu entries
-        this._appendSeparator();
-        this._show_in_folder = this._appendMenuItem("Show in folder" /* todo i10n support */);
-        this._show_in_folder.connect("activate", () => {
-            myLog("This would open the file manager"); // todo implement
+        // get the app's file path
+        const app = this._source.app;
+        const appInfo = app.get_app_info();
+        const filePath = appInfo.get_filename();
+        const fileDirectory = File.new_for_path(filePath).get_parent().get_path();
+
+        function copyPath() {
+            St.Clipboard.get_default().set_text(St.ClipboardType.PRIMARY, filePath);
+            St.Clipboard.get_default().set_text(St.ClipboardType.CLIPBOARD, filePath);
+        }
+
+        function openInFolder() {
             myLog(`Source: ${this._source}`);
-            const app = this._source.app;
             myLog(`App: ${app}`);
             myLog(`App id: ${this._source.app.get_id()}`);
             myLog(`App name: ${this._source.app.get_name()}`);
             //const appSys = Shell.AppSystem.get_default();
             //const app = appSys.lookup_app(this._source.app.get_id());
-            const appInfo = app.get_app_info();
-            const filePath = appInfo.get_filename();
-            const fileDirectory = File.new_for_path(filePath).get_parent().get_path();
             myLog(`App info: ${appInfo}`);
             myLog(`App filepath: ${filePath}`);
             myLog(`App directory: ${fileDirectory}`);
@@ -67,13 +70,18 @@ function injectIntoAppMenu() {
             const dbusCommand = `dbus-send --session --print-reply --dest=org.freedesktop.FileManager1 --type=method_call /org/freedesktop/FileManager1 org.freedesktop.FileManager1.ShowItems array:string:"file://${filePath}" string:""`
             //Util.spawn(["/bin/bash", "-c", `xdg-open ${fileDirectory}`]);
             Util.spawn(["/bin/bash", "-c", dbusCommand]);
-
+            // hide overview
             Main.overview.hide();
-        });
+        }
+
+        // add our menu entries
+        this._appendSeparator();
+        this._show_in_folder = this._appendMenuItem("Show in folder" /* todo i10n support */);
+        this._show_in_folder.connect("activate", openInFolder);
         this._copy_path = this._appendMenuItem("Copy path" /* todo i10n support */);
-        this._copy_path.connect("activate", () => {
-            myLog("This would copy the path to the clipboard."); // todo implement
-        });
+        this._copy_path.connect("activate", copyPath);
+        this._show_path = this._appendMenuItem(filePath);
+        this._show_path.connect("activate", copyPath);
     };
 }
 
