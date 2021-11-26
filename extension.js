@@ -31,14 +31,14 @@ class Extension {
 
     enable() {
         this.settings = ExtensionUtils.getSettings("ca.pfaj.showpath");
-        injectIntoAppMenu();
+        injectIntoAppMenu(this.settings);
     }
 
     disable() {
     }
 }
 
-function injectIntoAppMenu() {
+function injectIntoAppMenu(settings) {
     myLog("Injecting into app menu...");
     const originalFunc = AppIconMenu.prototype._rebuildMenu;
     AppIconMenu.prototype._rebuildMenu = function() {
@@ -51,37 +51,50 @@ function injectIntoAppMenu() {
         const filePath = appInfo.get_filename();
         const fileDirectory = File.new_for_path(filePath).get_parent().get_path();
 
-        function copyPath() {
-            St.Clipboard.get_default().set_text(St.ClipboardType.PRIMARY, filePath);
-            St.Clipboard.get_default().set_text(St.ClipboardType.CLIPBOARD, filePath);
-        }
-
-        function openInFolder() {
-            myLog(`Source: ${this._source}`);
-            myLog(`App: ${app}`);
-            myLog(`App id: ${this._source.app.get_id()}`);
-            myLog(`App name: ${this._source.app.get_name()}`);
-            //const appSys = Shell.AppSystem.get_default();
-            //const app = appSys.lookup_app(this._source.app.get_id());
-            myLog(`App info: ${appInfo}`);
-            myLog(`App filepath: ${filePath}`);
-            myLog(`App directory: ${fileDirectory}`);
-            // open file manager at path
-            const dbusCommand = `dbus-send --session --print-reply --dest=org.freedesktop.FileManager1 --type=method_call /org/freedesktop/FileManager1 org.freedesktop.FileManager1.ShowItems array:string:"file://${filePath}" string:""`
-            //Util.spawn(["/bin/bash", "-c", `xdg-open ${fileDirectory}`]);
-            Util.spawn(["/bin/bash", "-c", dbusCommand]);
-            // hide overview
-            Main.overview.hide();
-        }
+        // get extension settings
+        const showShowInFolder = settings.get_boolean("show-show-in-folder");
+        const showCopyPath = settings.get_boolean("show-copy-path");
+        const showPath = settings.get_boolean("show-path");
 
         // add our menu entries
-        this._appendSeparator();
-        this._show_in_folder = this._appendMenuItem("Show in folder" /* todo i10n support */);
-        this._show_in_folder.connect("activate", openInFolder);
-        this._copy_path = this._appendMenuItem("Copy path" /* todo i10n support */);
-        this._copy_path.connect("activate", copyPath);
-        this._show_path = this._appendMenuItem(filePath);
-        this._show_path.connect("activate", copyPath);
+        if (showShowInFolder || showCopyPath || showPath) {
+            this._appendSeparator();
+        }
+        if (showShowInFolder) {
+            this._show_in_folder = this._appendMenuItem("Show in folder" /* todo i10n support */);
+            this._show_in_folder.connect("activate", () => {
+                myLog(`Settings: ${settings}`);
+                myLog(`Source: ${this._source}`);
+                myLog(`App: ${app}`);
+                myLog(`App id: ${this._source.app.get_id()}`);
+                myLog(`App name: ${this._source.app.get_name()}`);
+                //const appSys = Shell.AppSystem.get_default();
+                //const app = appSys.lookup_app(this._source.app.get_id());
+                myLog(`App info: ${appInfo}`);
+                myLog(`App filepath: ${filePath}`);
+                myLog(`App directory: ${fileDirectory}`);
+                // open file manager at path
+                const dbusCommand = `dbus-send --session --print-reply --dest=org.freedesktop.FileManager1 --type=method_call /org/freedesktop/FileManager1 org.freedesktop.FileManager1.ShowItems array:string:"file://${filePath}" string:""`
+                //Util.spawn(["/bin/bash", "-c", `xdg-open ${fileDirectory}`]);
+                Util.spawn(["/bin/bash", "-c", dbusCommand]);
+                // hide overview
+                Main.overview.hide();
+            });
+        }
+        if (showCopyPath) {
+            this._copy_path = this._appendMenuItem("Copy path" /* todo i10n support */);
+            this._copy_path.connect("activate", () => {
+                St.Clipboard.get_default().set_text(St.ClipboardType.PRIMARY, filePath);
+                St.Clipboard.get_default().set_text(St.ClipboardType.CLIPBOARD, filePath);
+            });
+        }
+        if (showPath) {
+            this._show_path = this._appendMenuItem(filePath);
+            this._show_path.connect("activate", () => {
+                St.Clipboard.get_default().set_text(St.ClipboardType.PRIMARY, filePath);
+                St.Clipboard.get_default().set_text(St.ClipboardType.CLIPBOARD, filePath);
+            });
+        }        
     };
 }
 
